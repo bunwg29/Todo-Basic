@@ -1,35 +1,98 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useRef, useState } from "react";
+import "./App.css";
+import TodoItem from "./components/TodoItem";
+import Sidebar from "./components/Sidebar";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [todoList, setTodoList] = useState([
+    { id: 1, name: "Task 1", isImportant: false, isCompleted: true },
+    { id: 2, name: "Task 2", isImportant: true, isCompleted: true },
+    { id: 3, name: "Task 3", isImportant: false, isCompleted: false },
+  ]);
+
+  const [activeTodoItemId, setActiveTodoItemId] = useState();
+
+  const [showSidebar, setShowSidebar] = useState(false);
+
+  const activeTodoItem = todoList.find((todo) => todo.id === activeTodoItemId);
+
+  const handleCompleteCheckboxChange = (todoId) => {
+    const newTodoList = todoList.map((todo) => {
+      if (todo.id === todoId) {
+        return { ...todo, isCompleted: !todo.isCompleted };
+      }
+      return todo;
+    });
+    setTodoList(newTodoList);
+  };
+
+  const inputRef = useRef();
+
+  const handleTodoItemClick = (todoId) => {
+    setShowSidebar(true);
+    setActiveTodoItemId(todoId);
+  };
+
+  const handleTodoItemChange = (newTodo) => {
+    const newTodoList = todoList.map((todo) => {
+      if (todo.id === newTodo.id) {
+        return newTodo;
+      }
+      return todo;
+    });
+    setTodoList(newTodoList);
+  };
+
+  const todos = todoList.map((todo) => {
+    return (
+      <TodoItem
+        id={todo.id}
+        name={todo.name}
+        isImportant={todo.isImportant}
+        isCompleted={todo.isCompleted}
+        handleCompleteCheckboxChange={handleCompleteCheckboxChange}
+        handleTodoItemClick={handleTodoItemClick}
+        key={todo.id}
+      />
+    );
+  });
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="container">
+      <input
+        ref={inputRef}
+        type="text"
+        name="add-new-task"
+        placeholder="Add new task"
+        className="task-input"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            const value = e.target.value;
+            // console.log(value);
+            setTodoList([
+              ...todoList,
+              {
+                id: crypto.randomUUID(),
+                name: value,
+                isImportant: false,
+                isCompleted: false,
+              },
+            ]);
+            inputRef.current.value = "";
+          }
+        }}
+      />
+      <div> {todos} </div>
+      {showSidebar && (
+        <Sidebar
+          key={activeTodoItemId}
+          todoItem={activeTodoItem}
+          handleTodoItemChange={handleTodoItemChange}
+          setShowSidebar={setShowSidebar}
+        />
+      )}
+    </div>
+  );
 }
 
-export default App
+export default App;
