@@ -1,8 +1,9 @@
-import { useMemo, useRef, useState } from "react";
+import { useContext, useMemo, useRef, useState } from "react";
 import "./App.css";
 import TodoItem from "./components/TodoItem";
 import Sidebar from "./components/Sidebar";
 import FilterPanel from "./components/FilterPanel";
+import { AppContext } from "./context/AppProvider";
 
 function App() {
   const [todoList, setTodoList] = useState([
@@ -12,6 +13,7 @@ function App() {
       isImportant: false,
       isCompleted: true,
       isDeleted: false,
+      category: "personal",
     },
     {
       id: "2",
@@ -19,6 +21,7 @@ function App() {
       isImportant: true,
       isCompleted: true,
       isDeleted: false,
+      category: "company",
     },
     {
       id: "3",
@@ -26,6 +29,7 @@ function App() {
       isImportant: false,
       isCompleted: false,
       isDeleted: false,
+      category: "travel",
     },
   ]);
 
@@ -33,6 +37,7 @@ function App() {
   const [activeTodoItemId, setActiveTodoItemId] = useState();
   const [showSidebar, setShowSidebar] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const { selectedCategoryId } = useContext(AppContext);
 
   const activeTodoItem = todoList.find((todo) => todo.id === activeTodoItemId);
 
@@ -69,6 +74,10 @@ function App() {
         return false;
       }
 
+      if (selectedCategoryId && todo.category !== selectedCategoryId) {
+        return false;
+      }
+
       switch (selectedFilterId) {
         case "all":
           return true;
@@ -82,7 +91,7 @@ function App() {
           return true;
       }
     });
-  }, [todoList, selectedFilterId, searchText]);
+  }, [todoList, selectedFilterId, searchText, selectedCategoryId]);
 
   return (
     <div className="container">
@@ -112,6 +121,7 @@ function App() {
                   isImportant: false,
                   isCompleted: false,
                   isDeleted: false,
+                  category: "personal",
                 },
               ]);
               inputRef.current.value = "";
