@@ -1,8 +1,9 @@
+import { useState } from "react";
 import PropTypes from "prop-types";
 import "./Sidebar.css";
-import { useState } from "react";
 import { CATEGORY_ITEMS } from "../constants";
-function Sidebar(props) {
+
+const Sidebar = (props) => {
   const data = props.todoItem;
   const [name, setName] = useState(data.name);
   const [isImportant, setIsImportant] = useState(data.isImportant);
@@ -21,9 +22,9 @@ function Sidebar(props) {
         <div className="sb-form-field">
           <label htmlFor="sb-name">Todo Name</label>
           <input
-            type="text"
             id="sb-name"
             name="name"
+            type="text"
             value={name}
             onChange={(e) => {
               setName(e.target.value);
@@ -33,9 +34,9 @@ function Sidebar(props) {
         <div className="sb-form-field">
           <label htmlFor="sb-important">Is important?</label>
           <input
-            type="checkbox"
             id="sb-important"
             name="isImportant"
+            type="checkbox"
             checked={isImportant}
             onChange={() => {
               setIsImportant(!isImportant);
@@ -45,9 +46,9 @@ function Sidebar(props) {
         <div className="sb-form-field">
           <label htmlFor="sb-completed">Is completed?</label>
           <input
-            type="checkbox"
             id="sb-completed"
-            name="isCompleted"
+            name="name"
+            type="checkbox"
             checked={isCompleted}
             onChange={() => {
               setIsCompleted(!isCompleted);
@@ -59,11 +60,13 @@ function Sidebar(props) {
           <select
             id="sb-category"
             value={category}
-            onChange={(e) => setCategory(e.target.value)}
+            onChange={(e) => {
+              setCategory(e.target.value);
+            }}
           >
             {CATEGORY_ITEMS.map((category) => {
               return (
-                <option key={category.id} value={category.id}>
+                <option value={category.id} key={category.id}>
                   {category.label}
                 </option>
               );
@@ -77,9 +80,10 @@ function Sidebar(props) {
       </div>
     </div>
   );
-}
+};
 
 Sidebar.propTypes = {
+  setShowSidebar: PropTypes.func,
   todoItem: PropTypes.shape({
     name: PropTypes.string,
     isImportant: PropTypes.bool,
@@ -87,7 +91,6 @@ Sidebar.propTypes = {
     category: PropTypes.string,
   }),
   handleTodoItemChange: PropTypes.func,
-  setShowSidebar: PropTypes.func,
 };
 
 export default Sidebar;
