@@ -13,7 +13,19 @@
     margin-bottom: 5px;
   }
   
-  .container {
+  .main-content {
     background-color: #F0F0F0;
     padding: 30px;
+  }
+
+  .container {
+    display: flex;
+  }
+
+  .filter-panel {
+    flex: 1;
+  }
+
+  .main-content {
+    flex: 2;
   }
