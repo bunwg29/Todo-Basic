@@ -1,15 +1,16 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import { CATEGORY_ITEMS } from "../constants";
-import { AppContext } from "../context/AppProvider";
 import "./CategoryList.css";
+import { useAppContext } from "../context/AppProvider";
 import PropTypes from "prop-types";
 
-function CategoryList({ todoList }) {
-  const { selectedCategoryId, setSelectedCategoryId } = useContext(AppContext);
+const CategoryList = () => {
+  const { selectedCategoryId, setSelectedCategoryId, todoList } =
+    useAppContext();
 
   const countByCategory = useMemo(() => {
     return todoList.reduce(
-      (acc, cur) => ( { ...acc, [cur.category]: acc[cur.category] + 1 } ),
+      (acc, cur) => ({ ...acc, [cur.category]: acc[cur.category] + 1 }),
       {
         personal: 0,
         company: 0,
@@ -40,9 +41,10 @@ function CategoryList({ todoList }) {
       </div>
     </div>
   );
-}
+};
 
 CategoryList.propTypes = {
   todoList: PropTypes.array,
 };
+
 export default CategoryList;

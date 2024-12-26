@@ -1,74 +1,30 @@
-import { useContext, useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import "./App.css";
 import TodoItem from "./components/TodoItem";
 import Sidebar from "./components/Sidebar";
 import FilterPanel from "./components/FilterPanel";
-import { AppContext } from "./context/AppProvider";
+import { useAppContext } from "./context/AppProvider";
 
 function App() {
-  const [todoList, setTodoList] = useState([
-    {
-      id: "1",
-      name: "Task 1",
-      isImportant: false,
-      isCompleted: true,
-      isDeleted: false,
-      category: "personal",
-    },
-    {
-      id: "2",
-      name: "Task 2",
-      isImportant: true,
-      isCompleted: true,
-      isDeleted: false,
-      category: "company",
-    },
-    {
-      id: "3",
-      name: "Task 3",
-      isImportant: false,
-      isCompleted: false,
-      isDeleted: false,
-      category: "travel",
-    },
-  ]);
-
-  const [selectedFilterId, setSelectedFilterId] = useState("all");
-  const [activeTodoItemId, setActiveTodoItemId] = useState();
-  const [showSidebar, setShowSidebar] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const { selectedCategoryId } = useContext(AppContext);
+  const {
+    selectedCategoryId,
+    todoList,
+    setTodoList,
+    searchText,
+    selectedFilterId,
+    activeTodoItemId,
+    showSidebar,
+    setShowSidebar,
+    handleCompleteCheckboxChange,
+    handleTodoItemClick,
+    handleTodoItemChange
+  } = useAppContext();
 
   const activeTodoItem = todoList.find((todo) => todo.id === activeTodoItemId);
 
-  const handleCompleteCheckboxChange = (todoId) => {
-    const newTodoList = todoList.map((todo) => {
-      if (todo.id === todoId) {
-        return { ...todo, isCompleted: !todo.isCompleted };
-      }
-      return todo;
-    });
-    setTodoList(newTodoList);
-  };
-
   const inputRef = useRef();
 
-  const handleTodoItemClick = (todoId) => {
-    setShowSidebar(true);
-    setActiveTodoItemId(todoId);
-  };
-
-  const handleTodoItemChange = (newTodo) => {
-    const newTodoList = todoList.map((todo) => {
-      if (todo.id === newTodo.id) {
-        return newTodo;
-      }
-      return todo;
-    });
-    setTodoList(newTodoList);
-  };
-
-  const filterTodos = useMemo(() => {
+  const filteredTodos = useMemo(() => {
     return todoList.filter((todo) => {
       if (!todo.name.includes(searchText)) {
         return false;
@@ -95,13 +51,7 @@ function App() {
 
   return (
     <div className="container">
-      <FilterPanel
-        selectedFilterId={selectedFilterId}
-        setSelectedFilterId={setSelectedFilterId}
-        todoList={todoList}
-        searchText={searchText}
-        setSearchText={setSearchText}
-      />
+      <FilterPanel />
       <div className="main-content">
         <input
           ref={inputRef}
@@ -112,14 +62,14 @@ function App() {
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               const value = e.target.value;
-              // console.log(value);
+              console.log(value);
               setTodoList([
                 ...todoList,
                 {
                   id: crypto.randomUUID(),
                   name: value,
-                  isImportant: false,
                   isCompleted: false,
+                  isImportant: false,
                   isDeleted: false,
                   category: "personal",
                 },
@@ -129,16 +79,16 @@ function App() {
           }}
         />
         <div>
-          {filterTodos.map((todo) => {
+          {filteredTodos.map((todo) => {
             return (
               <TodoItem
                 id={todo.id}
                 name={todo.name}
+                key={todo.id}
                 isImportant={todo.isImportant}
                 isCompleted={todo.isCompleted}
                 handleCompleteCheckboxChange={handleCompleteCheckboxChange}
                 handleTodoItemClick={handleTodoItemClick}
-                key={todo.id}
               />
             );
           })}
